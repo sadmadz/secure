@@ -1,11 +1,4 @@
-import hashlib
-import random
 import sqlite3
-from _md5 import md5
-
-from Crypto import Random
-from Crypto.Cipher import AES
-import base64, os
 
 
 class Database:
@@ -41,14 +34,27 @@ class Database:
             self.conn.commit()
 
     @staticmethod
+    def get_cipher_records(age_param):
+        connection = sqlite3.connect('cipher.sqlite3')
+        try:
+            connection.execute(
+                'CREATE TABLE CIPHER (data TEXT  NOT NULL, age_index TEXT  NOT NULL);')
+        except Exception as e:
+            pass
+        cursor = connection.cursor()
+        sqlite_select_query = f"SELECT * FROM CIPHER WHERE age_index={age_param}"
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+        return records
+
+    @staticmethod
     def insert_cipher_data(items):
         connection = sqlite3.connect('cipher.sqlite3')
         try:
             connection.execute(
                 'CREATE TABLE CIPHER (data TEXT  NOT NULL, age_index TEXT  NOT NULL);')
         except Exception as e:
-            print(e)
-            print("baby")
+            pass
         for i in items:
             data = i[0]
             index = i[1]
