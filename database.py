@@ -1,3 +1,4 @@
+import random
 import sqlite3
 
 
@@ -25,13 +26,18 @@ class Database:
         return records
 
     def insert_test_data(self):
-        for i in range(1, 10):
-            fname = 'name' + str(i)
-            lname = 'name' + str(i)
-            age = 20 + i
-            params = (i, fname, lname, age)
-            self.conn.execute("INSERT INTO PERSON VALUES (?,?, ?, ?)", params)
-            self.conn.commit()
+
+        names = ['علی', 'رضا', 'زهرا']
+        fNames = ['اکبری', 'زارع', 'محمدی', 'حمیدی', 'حسینی']
+        id = 1
+
+        for i in names:
+            for j in fNames:
+                age = random.randint(1, 60)
+                params = (id, i, j, age)
+                self.conn.execute("INSERT INTO PERSON VALUES (?,?, ?, ?)", params)
+                self.conn.commit()
+                id += 1
 
     @staticmethod
     def get_cipher_records(age_param):

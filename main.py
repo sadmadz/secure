@@ -2,10 +2,6 @@ import hashlib
 import random
 import sqlite3
 
-from Crypto import Random
-from Crypto.Cipher import AES
-import base64, os
-
 from meta import Meta
 from cipher import AESCipher
 from database import Database
@@ -25,23 +21,23 @@ encrypted_records = []
 
 try:
     database = Database('db.sqlite3')
-    records = database.get_records()
-    # print(records)
-    cipher = AESCipher(Meta.password)
-    for i in records:
-        encrypted_records.append((cipher.encrypt(str(i)), Meta.get_index(i[3])))
-    # print(encrypted_records)
-
-    # database.insert_test_data()
-    # Database.insert_cipher_data(encrypted_records)
 
     while True:
-        print(f'{bcolors.HEADER}Enter Query {bcolors.OKBLUE}(query format--> age=?): ')
+        print(f'{bcolors.HEADER}Enter Command or Query {bcolors.OKBLUE}(query format--> age=?): ')
         query = input()
         query = query.replace(" ", "")
-        if query == 'quit':
+        if query == 'createdb':
+            database.connect()
+            database.insert_test_data()
+        elif query == 'createcipherdb':
+            records = database.get_records()
+            cipher = AESCipher(Meta.password)
+            for i in records:
+                encrypted_records.append((cipher.encrypt(str(i)), Meta.get_index(i[3])))
+            Database.insert_cipher_data(encrypted_records)
+        elif query == 'quit':
             break
-        if query.__contains__('age='):
+        elif query.__contains__('age='):
             try:
                 queryProcessor = QueryProcessor(query)
                 queryProcessor.transform_query()
@@ -50,6 +46,7 @@ try:
                 final_result = queryProcessor.final_result()
                 print(final_result)
             except Exception as e:
+                print(e)
                 print(f"{bcolors.FAIL}Wrong query")
 
         else:
